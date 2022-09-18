@@ -1,7 +1,6 @@
 import express from 'express';
 import logger from 'morgan';
 import { readFile, writeFile } from 'fs/promises';
-import * as cache from './cache.js';
 import { User, Post, Comment } from './content.js';
 
 const usersDBFilename = './databases/users.json';
@@ -26,7 +25,7 @@ async function save(filename, data) {
   }
 }
 
-async function createUser(username) {
+export async function createUser(username) {
   const idsDB = await load(idsDBFilename);
   const usersDB = await load(usersDBFilename);
   const userId = ++idsDB.userIndex;
@@ -37,7 +36,7 @@ async function createUser(username) {
   return user;
 }
 
-async function getUser(userId) {
+export async function getUser(userId) {
   const usersDB = await load(usersDBFilename);
   return usersDB[userId];
 }
@@ -66,7 +65,7 @@ function deleteAllPostComments(postId, commentsDB) {
   }
 }
 
-async function deleteUser(userId) {
+export async function deleteUser(userId) {
   const usersDB = await load(usersDBFilename);
   const postsDB = await load(postsDBFilename);
   const commentsDB = await load(commentsDBFilename);
@@ -84,7 +83,7 @@ async function deleteUser(userId) {
   }
 }
 
-async function createPost(userId, username, content) {
+export async function createPost(userId, username, content) {
   const idsDB = await load(idsDBFilename);
   const postsDB = await load(postsDBFilename);
   const postId = ++idsDB.postIndex;
@@ -95,12 +94,12 @@ async function createPost(userId, username, content) {
   return post;
 }
 
-async function getPost(postId) {
+export async function getPost(postId) {
   const postsDB = await load(postsDBFilename);
   return postsDB[postId];
 }
 
-async function deletePost(postId) {
+export async function deletePost(postId) {
   const postsDB = await load(postsDBFilename);
   const commentsDB = await load(commentsDBFilename);
   if (postId in postsDB) {
@@ -115,7 +114,7 @@ async function deletePost(postId) {
   }
 }
 
-async function createComment(postId, userId, username, content) {
+export async function createComment(postId, userId, username, content) {
   const idsDB = await load(idsDBFilename);
   const commentsDB = await load(commentsDBFilename);
   const commentId = ++idsDB.commentIndex;
@@ -126,12 +125,12 @@ async function createComment(postId, userId, username, content) {
   return comment;
 }
 
-async function getComment(commentId) {
+export async function getComment(commentId) {
   const commentsDB = await load(commentsDBFilename);
   return commentsDB[commentId];
 }
 
-async function deleteComment(commentId) {
+export async function deleteComment(commentId) {
   const commentsDB = await load(commentsDBFilename);
   if (commentId in commentsDB) {
     const comment = commentsDB[commentId];
