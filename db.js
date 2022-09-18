@@ -2,11 +2,20 @@ import express from 'express';
 import logger from 'morgan';
 import { readFile, writeFile } from 'fs/promises';
 import { User, Post, Comment } from './content.js';
+import { exec } from 'child_process';
 
 const usersDBFilename = './databases/users.json';
 const postsDBFilename = './databases/posts.json';
 const commentsDBFilename = './databases/comments.json';
 const idsDBFilename = './databases/ids.json';
+
+export async function initDatabases() {
+  await writeFile('databases/users.json', JSON.stringify({}), { encoding: 'utf8' });
+  await writeFile('databases/posts.json', JSON.stringify({}), { encoding: 'utf8' });
+  await writeFile('databases/comments.json', JSON.stringify({}), { encoding: 'utf8' });
+  exec('node databases/ids.js > ids.json');
+  console.log('Databases Initialized');
+}
 
 async function load(filename) {
   try {

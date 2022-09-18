@@ -2,7 +2,6 @@ import express from 'express';
 import logger from 'morgan';
 import * as db from './db.js';
 import errorMessages from './errorMessages.js';
-import { exec } from 'child_process';
 
 const app = express();
 const port = 3000;
@@ -175,14 +174,7 @@ app.delete('/api/comments/delete', async (req, res) => {
   }
 });
 
-async function initDatabases() {
-  await writeFile('databases/users.json', JSON.stringify({}), { encoding: 'utf8' });
-  await writeFile('databases/posts.json', JSON.stringify({}), { encoding: 'utf8' });
-  await writeFile('databases/comments.json', JSON.stringify({}), { encoding: 'utf8' });
-}
-
 app.listen(port, async () => {
-  await initDatabases();
-  exec('node databases/ids.js > ids.json');
+  await db.initDatabases();
   console.log(`Example app listening at http://localhost:${port}`);
 });
