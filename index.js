@@ -19,7 +19,21 @@ app.post('/api/user/create', (req, res) => {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  const user = db.createUser(title, body);
+  const user = db.createUser(name);
+	if (user === null) {
+		res.status(500).json({ message: errorMessages.internalServer });
+		return;
+	}
+	res.status(201).json(user);
+});
+
+app.delete('/api/user/delete', (req, res) => {
+	const { userId } = req.body;
+	if (userId === undefined) {
+		res.status(400).json({ message: errorMessages.missingInfo });
+		return;
+	}
+  const user = db.deleteUser(userId);
 	if (user === null) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
@@ -42,6 +56,35 @@ app.post('/api/posts/create', (req, res) => {
 		return;
 	}
 	res.status(201).json(post);
+});
+
+app.get('/api/posts/get', (req, res) => {
+	const { commentId } = req.body;
+	if (commentId === undefined) {
+		res.status(400).json({ message: errorMessages.missingInfo });
+		return;
+	}
+	const comment = db.getComment(commentId);
+	if (comment === null) {
+		res.status(404).json({ message: errorMessages.commentDNE });
+		return;
+	}
+	res.json(comments);
+});
+
+app.delete('/api/posts/delete', (req, res) => {
+	const { postId } = req.body;
+	if (postId === undefined) {
+		res.status(400).json({ message: errorMessages.missingInfo });
+		return;
+	}
+  cache.deletePost(postId);
+  const post = db.deletePost(postId);
+	if (user === null) {
+		res.status(500).json({ message: errorMessages.internalServer });
+		return;
+	}
+	res.status(201).json(user);
 });
 
 app.post('/api/comments/create', (req, res) => {
@@ -73,6 +116,21 @@ app.get('/api/comments/get', (req, res) => {
 		return;
 	}
 	res.json(comments);
+});
+
+app.delete('/api/comments/delete', (req, res) => {
+	const { commentId } = req.body;
+	if (commentId === undefined) {
+		res.status(400).json({ message: errorMessages.missingInfo });
+		return;
+	}
+  cache.deletePost(commentId);
+  const comment = db.deletePost(commentId);
+	if (comment === null) {
+		res.status(500).json({ message: errorMessages.internalServer });
+		return;
+	}
+	res.status(201).json(comment);
 });
 
 
