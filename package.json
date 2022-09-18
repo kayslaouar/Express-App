@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon --ignore ./databases/ index.js"
   },
   "repository": {
     "type": "git",
@@ -16,9 +16,6 @@
     "express": "^4.18.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.19"
-  },
-  "devDependencies": {
-    "eslint": "^8.23.0"
   },
   "author": "",
   "license": "ISC",

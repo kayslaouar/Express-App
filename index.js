@@ -3,6 +3,7 @@ import logger from 'morgan';
 import * as db from './db.js';
 import errorMessages from './errorMessages.js';
 
+await db.initDatabases();
 const app = express();
 const port = 3000;
 

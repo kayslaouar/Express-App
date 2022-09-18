@@ -7,13 +7,13 @@ const postsDBFilename = './databases/posts.json';
 const commentsDBFilename = './databases/comments.json';
 const idsDBFilename = './databases/ids.json';
 
-/*export async function initDatabases() {
+export async function initDatabases() {
   await writeFile('databases/users.json', JSON.stringify({}), { encoding: 'utf8' });
   await writeFile('databases/posts.json', JSON.stringify({}), { encoding: 'utf8' });
   await writeFile('databases/comments.json', JSON.stringify({}), { encoding: 'utf8' });
-  exec('node databases/ids.js > ids.json');
+  exec('node databases/ids.js > databases/ids.json');
   console.log('Databases Initialized');
-}*/
+}
 
 async function load(filename) {
   try {
@@ -49,25 +49,25 @@ export async function getUser(userId) {
 }
 
 function deleteAllUserPosts(userId, postsDB) {
-  for (const post in postsDB) {
-    if (post.userId === userId) {
-      delete postsDB[post.postId];
+  for (const postId in postsDB) {
+    if (postsDB[postId].userId === userId) {
+      delete postsDB[postId];
     }
   }
 }
 
 function deleteAllUserComments(userId, commentsDB) {
-  for (const comment in commentsDB) {
-    if (comment.userId === userId) {
-      delete commentsDB[comment.commentId];
+  for (const commentId in commentsDB) {
+    if (commentsDB[commentId].userId === userId) {
+      delete commentsDB[commentId];
     }
   }
 }
 
 function deleteAllPostComments(postId, commentsDB) {
-  for (const comment in commentsDB) {
-    if (comment.postId === postId) {
-      delete commentsDB[comment.commentId];
+  for (const commentId in commentsDB) {
+    if (commentsDB[commentId].postId === postId) {
+      delete commentsDB[commentId];
     }
   }
 }
