@@ -68,11 +68,12 @@ app.post('/api/posts/create', async (req, res) => {
 		return;
 	}
   try {
-    if (await db.getUser(userId) === undefined) {
+    const user = await db.getUser(userId);
+    if (!user) {
       res.status(404).json({ message: errorMessages.userDNE });
       return;
     }
-    const post = await db.createPost(userId, content);
+    const post = await db.createPost(userId, user.username, content);
     res.status(201).json(post);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
@@ -122,14 +123,16 @@ app.post('/api/comments/create', async (req, res) => {
 		return;
 	}
   try {
-    if (!(await db.getUser(userId))) {
+    const user = await db.getUser(userId);
+    const post = await db.getPost(postId);
+    if (!user) {
       res.status(404).json({ message: errorMessages.userDNE });
       return;
-    } else if (!(await db.getPost(postId))) {
+    } else if (!post) {
       res.status(404).json({ message: errorMessages.postDNE });
       return;
     }
-    const comment = await db.createComment(userId, postId, content);
+    const comment = await db.createComment(postId, userId, user.username, content);
     res.status(201).json(comment);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
