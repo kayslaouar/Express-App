@@ -3,5 +3,6 @@ export default errorMessages = {
 	userDNE: 'User does not exist',
 	postDNE: 'Post does not exist',
 	commentDNE: 'Comment does not exist',
-	internalServer: 'Internal server error',
+	serverFailure: 'Internal server error',
+	databaseFailure: 'Internal database error',
 };
