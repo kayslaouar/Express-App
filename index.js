@@ -12,7 +12,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //! 500 INTERNAL SERVER ERROR: If there is an exception or other error condition that is rare or shouldn't occur
-//! id generator (use files)
 app.post('/api/user/create', (req, res) => {
 	const { name } = req.body;
 	if (name === undefined) {
@@ -20,7 +19,7 @@ app.post('/api/user/create', (req, res) => {
 		return;
 	}
   const user = db.createUser(name);
-	if (user === null) {
+	if (!user) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
 	}
@@ -34,7 +33,7 @@ app.delete('/api/user/delete', (req, res) => {
 		return;
 	}
   const user = db.deleteUser(userId);
-	if (user === null) {
+	if (!user) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
 	}
@@ -51,7 +50,7 @@ app.post('/api/posts/create', (req, res) => {
 		return;
 	}
 	const post = db.createPost(userId, content);
-	if (post === null) {
+	if (!post) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
 	}
@@ -65,11 +64,11 @@ app.get('/api/posts/get', (req, res) => {
 		return;
 	}
 	const comment = db.getComment(commentId);
-	if (comment === null) {
+	if (!comment) {
 		res.status(404).json({ message: errorMessages.commentDNE });
 		return;
 	}
-	res.json(comments);
+	res.json(comment);
 });
 
 app.delete('/api/posts/delete', (req, res) => {
@@ -78,9 +77,8 @@ app.delete('/api/posts/delete', (req, res) => {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  cache.deletePost(postId);
   const post = db.deletePost(postId);
-	if (user === null) {
+	if (!post) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
 	}
@@ -95,9 +93,12 @@ app.post('/api/comments/create', (req, res) => {
 	} else if (db.getUser(userId) === null) {
 		res.status(404).json({ message: errorMessages.userDNE });
 		return;
-	}
-	const comment = db.createComment(userId, content);
-	if (comment === null) {
+	} else if (db.getPost(postId) === null) {
+    res.status(404).json({ message: errorMessages.postDNE });
+		return;
+  }
+	const comment = db.createComment(userId, postId, content);
+	if (!comment) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
 	}
@@ -111,7 +112,7 @@ app.get('/api/comments/get', (req, res) => {
 		return;
 	}
 	const comment = db.getComment(commentId);
-	if (comment === null) {
+	if (!comment) {
 		res.status(404).json({ message: errorMessages.commentDNE });
 		return;
 	}
@@ -124,15 +125,13 @@ app.delete('/api/comments/delete', (req, res) => {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  cache.deletePost(commentId);
-  const comment = db.deletePost(commentId);
-	if (comment === null) {
+  const comment = db.deleteComment(commentId);
+	if (!comment) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
 	}
 	res.status(201).json(comment);
 });
-
 
 app.listen(port, () => {
 	console.log(`Example app listening at http://localhost:${port}`);
