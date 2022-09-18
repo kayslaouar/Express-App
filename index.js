@@ -1,7 +1,6 @@
 import express from 'express';
 import logger from 'morgan';
 import * as db from './db.js';
-import * as cache from './cache.js';
 import errorMessages from './errorMessages.js';
 
 const app = express();
@@ -12,13 +11,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 //! 500 INTERNAL SERVER ERROR: If there is an exception or other error condition that is rare or shouldn't occur
-app.post('/api/user/create', (req, res) => {
+app.post('/api/user/create', async (req, res) => {
 	const { name } = req.body;
 	if (name === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  const user = db.createUser(name);
+  const user = await db.createUser(name);
 	if (!user) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
@@ -26,13 +25,13 @@ app.post('/api/user/create', (req, res) => {
 	res.status(201).json(user);
 });
 
-app.delete('/api/user/delete', (req, res) => {
+app.delete('/api/user/delete', async (req, res) => {
 	const { userId } = req.body;
 	if (userId === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  const user = db.deleteUser(userId);
+  const user = await db.deleteUser(userId);
 	if (!user) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
@@ -40,16 +39,16 @@ app.delete('/api/user/delete', (req, res) => {
 	res.status(201).json(user);
 });
 
-app.post('/api/posts/create', (req, res) => {
+app.post('/api/posts/create', async (req, res) => {
 	const { userId, content } = req.body;
 	if (userId === undefined || content === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
-	} else if (db.getUser(userId) === null) {
+	} else if (await db.getUser(userId) === null) {
 		res.status(404).json({ message: errorMessages.userDNE });
 		return;
 	}
-	const post = db.createPost(userId, content);
+	const post = await db.createPost(userId, content);
 	if (!post) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
@@ -57,13 +56,13 @@ app.post('/api/posts/create', (req, res) => {
 	res.status(201).json(post);
 });
 
-app.get('/api/posts/get', (req, res) => {
+app.get('/api/posts/get', async (req, res) => {
 	const { commentId } = req.body;
 	if (commentId === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-	const comment = db.getComment(commentId);
+	const comment = await db.getComment(commentId);
 	if (!comment) {
 		res.status(404).json({ message: errorMessages.commentDNE });
 		return;
@@ -71,13 +70,13 @@ app.get('/api/posts/get', (req, res) => {
 	res.json(comment);
 });
 
-app.delete('/api/posts/delete', (req, res) => {
+app.delete('/api/posts/delete', async (req, res) => {
 	const { postId } = req.body;
 	if (postId === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  const post = db.deletePost(postId);
+  const post = await db.deletePost(postId);
 	if (!post) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
@@ -85,19 +84,19 @@ app.delete('/api/posts/delete', (req, res) => {
 	res.status(201).json(user);
 });
 
-app.post('/api/comments/create', (req, res) => {
+app.post('/api/comments/create', async (req, res) => {
 	const { userId, postId, content } = req.body;
 	if (userId === undefined || postId === undefined || content === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
-	} else if (db.getUser(userId) === null) {
+	} else if (await db.getUser(userId) === null) {
 		res.status(404).json({ message: errorMessages.userDNE });
 		return;
-	} else if (db.getPost(postId) === null) {
+	} else if (await db.getPost(postId) === null) {
     res.status(404).json({ message: errorMessages.postDNE });
 		return;
   }
-	const comment = db.createComment(userId, postId, content);
+	const comment = await db.createComment(userId, postId, content);
 	if (!comment) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
@@ -105,13 +104,13 @@ app.post('/api/comments/create', (req, res) => {
 	res.status(201).json(comment);
 });
 
-app.get('/api/comments/get', (req, res) => {
+app.get('/api/comments/get', async (req, res) => {
 	const { commentId } = req.body;
 	if (commentId === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-	const comment = db.getComment(commentId);
+	const comment = await db.getComment(commentId);
 	if (!comment) {
 		res.status(404).json({ message: errorMessages.commentDNE });
 		return;
@@ -119,13 +118,13 @@ app.get('/api/comments/get', (req, res) => {
 	res.json(comments);
 });
 
-app.delete('/api/comments/delete', (req, res) => {
+app.delete('/api/comments/delete', async (req, res) => {
 	const { commentId } = req.body;
 	if (commentId === undefined) {
 		res.status(400).json({ message: errorMessages.missingInfo });
 		return;
 	}
-  const comment = db.deleteComment(commentId);
+  const comment = await db.deleteComment(commentId);
 	if (!comment) {
 		res.status(500).json({ message: errorMessages.internalServer });
 		return;
