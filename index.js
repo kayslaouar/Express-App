@@ -10,7 +10,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-//! 500 INTERNAL SERVER ERROR: If there is an exception or other error condition that is rare or shouldn't occur
 app.post('/api/user/create', async (req, res) => {
 	const { name } = req.body;
 	if (name === undefined) {
@@ -33,6 +32,10 @@ app.delete('/api/user/delete', async (req, res) => {
 	}
   try {
     const user = await db.deleteUser(userId);
+    if (!user) {
+      res.status(404).json({ message: errorMessages.userDNE });
+		  return;
+    }
     res.status(201).json(user);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
@@ -87,7 +90,7 @@ app.delete('/api/posts/delete', async (req, res) => {
       res.status(404).json({ message: errorMessages.postDNE });
       return;
     }
-    res.status(201).json(user);
+    res.status(201).json(post);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
   }
@@ -110,7 +113,7 @@ app.post('/api/comments/create', async (req, res) => {
     const comment = await db.createComment(userId, postId, content);
     res.status(201).json(comment);
   } catch(e) {
-    res.status(500).json({ message: errorMessages.internalServer });
+    res.status(500).json({ message: errorMessages.serverFailure });
   }
 });
 
@@ -126,9 +129,9 @@ app.get('/api/comments/get', async (req, res) => {
       res.status(404).json({ message: errorMessages.commentDNE });
       return;
     }
-    res.status(201).json(comments);
+    res.status(201).json(comment);
   } catch(e) {
-    res.status(500).json({ message: errorMessages.internalServer });
+    res.status(500).json({ message: errorMessages.serverFailure });
   }
 });
 
@@ -146,7 +149,7 @@ app.delete('/api/comments/delete', async (req, res) => {
     }
     res.status(201).json(comment);
   } catch(e) {
-    res.status(500).json({ message: errorMessages.internalServer });
+    res.status(500).json({ message: errorMessages.serverFailure });
   }
 });
 
