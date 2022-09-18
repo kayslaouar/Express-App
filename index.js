@@ -24,6 +24,24 @@ app.post('/api/user/create', async (req, res) => {
   }
 });
 
+app.get('/api/user/get', async (req, res) => {
+	const { userId } = req.body;
+	if (userId === undefined) {
+		res.status(400).json({ message: errorMessages.missingInfo });
+		return;
+	}
+  try {
+    const user = await db.getUser(userId);
+	  if (!user) {
+		  res.status(404).json({ message: errorMessages.userDNE });
+		  return;
+    }
+    res.status(201).json(user);
+  } catch(e) {
+    res.status(500).json({ message: errorMessages.serverFailure });
+  }
+});
+
 app.delete('/api/user/delete', async (req, res) => {
 	const { userId } = req.body;
 	if (userId === undefined) {
