@@ -175,6 +175,6 @@ app.delete('/api/comments/delete', async (req, res) => {
 });
 
 app.listen(port, async () => {
-  db.initDatabases();
+  //db.initDatabases();
   console.log(`Example app listening at http://localhost:${port}`);
 });
