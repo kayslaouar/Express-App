@@ -1,4 +1,4 @@
-const ids = {userIndex: 0, postIndex: 0, commentIndex: 0, ids: []};
+const ids = {userIndex: 0, postIndex: 0, commentIndex: 0};
 
 console.log(JSON.stringify(ids));
 
