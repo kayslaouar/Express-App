@@ -37,7 +37,7 @@ app.get('/api/user/get', async (req, res) => {
 		  res.status(404).json({ message: errorMessages.userDNE });
 		  return;
     }
-    res.status(201).json(user);
+    res.status(200).json(user);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
   }
@@ -92,7 +92,7 @@ app.get('/api/posts/get', async (req, res) => {
 		  res.status(404).json({ message: errorMessages.postDNE });
 		  return;
     }
-    res.status(201).json(post);
+    res.status(200).json(post);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
   }
@@ -151,7 +151,7 @@ app.get('/api/comments/get', async (req, res) => {
       res.status(404).json({ message: errorMessages.commentDNE });
       return;
     }
-    res.status(201).json(comment);
+    res.status(200).json(comment);
   } catch(e) {
     res.status(500).json({ message: errorMessages.serverFailure });
   }
